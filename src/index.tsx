@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { render } from 'react-dom';
-import App from './app';
+import { App, AppState } from './App';
 
-render(<App />, document.getElementById('root'));
+const appState = new AppState();
+
+render(<App state={appState} />, document.getElementById('root'));

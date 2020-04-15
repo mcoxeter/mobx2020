@@ -1,13 +1,15 @@
 import * as React from 'react';
-import * as appStore from './store';
+import { observable, action } from 'mobx';
+import { observer } from 'mobx-react';
 
-const NewGameForm = () => {
-  const store = React.useContext(appStore.StoreContext);
+export const NewGameForm: React.FC<{
+  onSubmit: (title: string) => void;
+}> = ({ onSubmit }) => {
   const [game, setGame] = React.useState('');
   return (
     <form
       onSubmit={(e) => {
-        store.addGame(game);
+        onSubmit(game);
         setGame('');
         e.preventDefault();
       }}
@@ -23,5 +25,3 @@ const NewGameForm = () => {
     </form>
   );
 };
-
-export default NewGameForm;
