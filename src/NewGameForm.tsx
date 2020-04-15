@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { observable, action } from 'mobx';
-import { observer } from 'mobx-react';
 
 export const NewGameForm: React.FC<{
   onSubmit: (title: string) => void;
