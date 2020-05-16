@@ -38,5 +38,5 @@ jobs:
       - name: Docker build of dist folder
       - run: |
         docker build --pull --rm -f "dockerfile" -t elseviercr.azurecr.io/pure-styleguide:pr "."
-        docker login -u $DOCKER_CONTAINER_NAME -p $DOCKER_CONTAINER_PW elseviercr.azurecr.io
+        docker login -u ${{secrets.DOCKER_CONTAINER_NAME }} -p ${{secrets.DOCKER_CONTAINER_PW}} elseviercr.azurecr.io
         docker push elseviercr.azurecr.io/pure-styleguide:pr
