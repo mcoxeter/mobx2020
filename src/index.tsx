@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render } from 'react-dom';
-import { App, AppState } from './App';
+import { App, AppState } from './app';
 
 const appState = new AppState();
 
