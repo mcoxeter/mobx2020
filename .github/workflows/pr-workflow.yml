@@ -6,7 +6,7 @@ name: Pull Request CI/CD
 # events but only for the master branch
 on:
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -20,15 +20,23 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-    - name: Install using Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Install using Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: echo Build id of $GITHUB_RUN_ID
+      - run: npm install
 
-    - name: Test
-      run: npm test
+      - name: Test
+        run: npm test
 
+      - name: Build -- production
+        run: npm run build
 
+      - name: Docker build of dist folder
+      - run: |
+        docker build --pull --rm -f "dockerfile" -t elseviercr.azurecr.io/pure-styleguide:pr "."
+        docker login -u $DOCKER_CONTAINER_NAME -p $DOCKER_CONTAINER_PW elseviercr.azurecr.io
+        docker push elseviercr.azurecr.io/pure-styleguide:pr
