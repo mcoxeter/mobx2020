@@ -14,6 +14,8 @@ export class GamesListState {
   public add(newTitle: string): void {
     this.gameTitles.push(newTitle);
   }
+
+  public deadCode(): void {}
 }
 
 export const GamesList: React.FC<{ state: GamesListState }> = observer(
