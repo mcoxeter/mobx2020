@@ -90,7 +90,7 @@ jobs:
           name: dist
 
       - name: Docker build
-        run: docker build --pull --rm -f "dockerfile" -t elseviercr.azurecr.io/pure-styleguide "."
+        run: docker build --pull --rm -f "dockerfile" -t elseviercr.azurecr.io/mobx2020 "."
 
       - name: Docker container login
         env:
@@ -99,4 +99,4 @@ jobs:
         run: docker login -u $DOCKER_CONTAINER_NAME -p $DOCKER_CONTAINER_PW elseviercr.azurecr.io
 
       - name: Docker container deploy
-        run: docker push elseviercr.azurecr.io/pure-styleguide
+        run: docker push elseviercr.azurecr.io/mobx2020
