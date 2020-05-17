@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10.x]
+        node-version: [10.x, 12.x]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -29,17 +29,74 @@ jobs:
       - run: echo Build id of $GITHUB_RUN_ID
       - run: npm install
 
-      - name: Test
-        run: npm test
-
       - name: Build -- production
         run: npm run build
 
-      - name: Docker build of dist folder
+      - name: Create artifact - build dist folder
+        uses: actions/upload-artifact@v1
+        with:
+          name: dist
+          path: dist
+
+      - name: Test
+        run: npm test
+
+      - name: Coverage
+        run: echo jest --coverage
+
+      - name: Report bundle sizes
+        run: |
+          echo checking bundle sizes
+          echo "{ resuts: 'All good' }" > bundle-results.json
+
+      - name: Create artifact - report bundle sizes
+        uses: actions/upload-artifact@v1
+        with:
+          name: bundleSizes
+          path: bundle-results.json
+
+      - name: Check component accessability
+        run: |
+          echo checking component accessability
+          echo "{ resuts: 'All good' }" > accessability-results.json
+
+      - name: Create artifact - component accessability
+        uses: actions/upload-artifact@v1
+        with:
+          name: accessabilityReport
+          path: accessability-results.json
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - run: echo npm publish
+
+  deploy:
+    needs: [build, publish-npm]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Download artifact - build dist folder
+        uses: actions/download-artifact@v1
+        with:
+          name: dist
+
+      - name: Docker build
+        run: docker build --pull --rm -f "dockerfile" -t elseviercr.azurecr.io/pure-styleguide:pr "."
+
+      - name: Docker container login
         env:
           DOCKER_CONTAINER_NAME: ${{ secrets.DOCKER_CONTAINER_NAME }}
           DOCKER_CONTAINER_PW: ${{ secrets.DOCKER_CONTAINER_PW }}
-        run: |
-          docker build --pull --rm -f "dockerfile" -t elseviercr.azurecr.io/pure-styleguide:pr "."
-          docker login -u $DOCKER_CONTAINER_NAME -p $DOCKER_CONTAINER_PW elseviercr.azurecr.io
-          docker push elseviercr.azurecr.io/pure-styleguide:pr
+        run: docker login -u $DOCKER_CONTAINER_NAME -p $DOCKER_CONTAINER_PW elseviercr.azurecr.io
+
+      - name: Docker container deploy
+        run: docker push elseviercr.azurecr.io/pure-styleguide:pr
