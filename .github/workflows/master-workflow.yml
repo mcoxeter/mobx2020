@@ -1,11 +1,11 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Master CI/CD
+name: Pull Request CI/CD
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  push:
+  pull_request:
     branches: [master]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -26,19 +26,77 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: echo Build id of $GITHUB_RUN_ID
       - run: npm install
+
+      - name: Build -- production
+        run: npm run build
+
+      - name: Create artifact - build dist folder
+        uses: actions/upload-artifact@v1
+        with:
+          name: dist
+          path: dist
 
       - name: Test
         run: npm test
 
-      - name: Build for production
-        run: npm run build
+      - name: Coverage
+        run: echo jest --coverage
 
-      - name: Docker build of dist folder
+      - name: Report bundle sizes
+        run: |
+          echo checking bundle sizes
+          echo "{ resuts: 'All good' }" > bundle-results.json
+
+      - name: Create artifact - report bundle sizes
+        uses: actions/upload-artifact@v1
+        with:
+          name: bundleSizes
+          path: bundle-results.json
+
+      - name: Check component accessability
+        run: |
+          echo checking component accessability
+          echo "{ resuts: 'All good' }" > accessability-results.json
+
+      - name: Create artifact - component accessability
+        uses: actions/upload-artifact@v1
+        with:
+          name: accessabilityReport
+          path: accessability-results.json
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - run: echo npm publish
+
+  deploy:
+    needs: [build, publish-npm]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Download artifact - build dist folder
+        uses: actions/download-artifact@v1
+        with:
+          name: dist
+
+      - name: Docker build
+        run: docker build --pull --rm -f "dockerfile" -t elseviercr.azurecr.io/pure-styleguide "."
+
+      - name: Docker container login
         env:
           DOCKER_CONTAINER_NAME: ${{ secrets.DOCKER_CONTAINER_NAME }}
           DOCKER_CONTAINER_PW: ${{ secrets.DOCKER_CONTAINER_PW }}
-        run: |
-          docker build --pull --rm -f "dockerfile" -t elseviercr.azurecr.io/pure-styleguide "."
-          docker login -u $DOCKER_CONTAINER_NAME -p $DOCKER_CONTAINER_PW elseviercr.azurecr.io
-          docker push elseviercr.azurecr.io/pure-styleguide
+        run: docker login -u $DOCKER_CONTAINER_NAME -p $DOCKER_CONTAINER_PW elseviercr.azurecr.io
+
+      - name: Docker container deploy
+        run: docker push elseviercr.azurecr.io/pure-styleguide
