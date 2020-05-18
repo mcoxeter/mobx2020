@@ -47,13 +47,13 @@ jobs:
       - name: Report bundle sizes
         run: |
           echo checking bundle sizes
-          echo "{ resuts: 'All good' }" > bundle-results.json
+          npm run report:bundle
 
       - name: Create artifact - report bundle sizes
         uses: actions/upload-artifact@v1
         with:
           name: bundleSizes
-          path: bundle-results.json
+          path: webpack-stats.json
 
       - name: Check component accessability
         run: |
