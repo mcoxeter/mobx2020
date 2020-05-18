@@ -47,7 +47,7 @@ jobs:
       - name: Report bundle sizes
         run: |
           echo checking bundle sizes
-          num run report:bundle
+          npm run report:bundle
 
       - name: Create artifact - report bundle sizes
         uses: actions/upload-artifact@v1
