@@ -1,4 +1,5 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
+const SizePlugin = require('size-plugin');
 
 module.exports = {
   entry: './src/index.tsx',
@@ -28,6 +29,7 @@ module.exports = {
     new HtmlWebPackPlugin({
       template: './src/index.html',
       filtname: './index.html',
+      new SizePlugin({publish:true})
     }),
   ],
 };
