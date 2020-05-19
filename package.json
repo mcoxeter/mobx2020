@@ -27,6 +27,7 @@
     "html-loader": "^1.1.0",
     "html-webpack-plugin": "^4.2.0",
     "jsxobj": "^1.1.0",
+    "size-plugin": "^2.0.1",
     "ts-loader": "^7.0.0",
     "typescript": "^3.8.3",
     "webpack": "^4.42.1",

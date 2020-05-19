@@ -29,7 +29,7 @@ module.exports = {
     new HtmlWebPackPlugin({
       template: './src/index.html',
       filtname: './index.html',
-      new SizePlugin({publish:true})
     }),
+    new SizePlugin({publish:true})
   ],
 };
