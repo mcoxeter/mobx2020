@@ -1,5 +1,0 @@
-size-files: # list of size*.json files incase you have multiple packages.
-    - webpack-stats.json
-base-branches: # base branches against which bot can open a pull request.
-    - master
-    - next
