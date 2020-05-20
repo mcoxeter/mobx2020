@@ -1,4 +1,3 @@
-![Pull Request CI/CD](https://github.com/mcoxeter/mobx2020/workflows/Pull%20Request%20CI/CD/badge.svg)
 ![Master CI/CD](https://github.com/mcoxeter/mobx2020/workflows/Master%20CI/CD/badge.svg)
 
 # mobx2020
