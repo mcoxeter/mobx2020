@@ -15,7 +15,6 @@ export class GamesListState {
     this.gameTitles.push(newTitle);
   }
 }
-Errorsss
 
 export const GamesList: React.FC<{ state: GamesListState }> = observer(
   ({ state }) => {
